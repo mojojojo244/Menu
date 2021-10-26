@@ -75,8 +75,15 @@ const menu = [
 
 const sectionCenter = document.querySelector('.section-center');
 
+const container = document.querySelector('.btn-container');
+
 window.addEventListener('DOMContentLoaded', function () {
-  let displayMenu = menu.map(function (item) {
+  displayMenuItems(menu);
+  displayMenuButtons();
+});
+
+function displayMenuItems(menuItems) {
+  let displayMenu = menuItems.map(function (item) {
     return `<article class="menu-item">
     <img src=${item.img} class="photo" alt=${item.title} />
     <div class="item-info">
@@ -92,4 +99,39 @@ window.addEventListener('DOMContentLoaded', function () {
   });
   displayMenu = displayMenu.join('');
   sectionCenter.innerHTML = displayMenu;
-});
+}
+
+function displayMenuButtons() {
+  const categories = menu.reduce(
+    function (values, item) {
+      if (!values.includes(item.category)) {
+        values.push(item.category);
+      }
+      return values;
+    },
+    ['all']
+  );
+
+  const categoryBtns = categories
+    .map(function (category) {
+      return `<button class="filter-btn" type="button" data-id=${category}>${category}</button>`;
+    })
+    .join('');
+  container.innerHTML = categoryBtns;
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      const category = e.currentTarget.dataset.id;
+      const menuCategory = menu.filter(function (menuItem) {
+        if (menuItem.category === category) {
+          return menuItem;
+        }
+      });
+      if (category === 'all') {
+        displayMenuItems(menu);
+      } else {
+        displayMenuItems(menuCategory);
+      }
+    });
+  });
+}
